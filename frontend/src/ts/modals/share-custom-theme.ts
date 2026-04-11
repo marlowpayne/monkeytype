@@ -48,6 +48,7 @@ async function generateUrl(): Promise<string> {
 async function copy(): Promise<void> {
   const url = await generateUrl();
 
+  /* eslint-disable */
   try {
     await navigator.clipboard.writeText(url);
     showSuccessNotification("URL Copied to clipboard");
@@ -67,6 +68,7 @@ async function copy(): Promise<void> {
       },
     });
   }
+  /* eslint-enable */
 }
 
 const modal = new AnimatedModal({

@@ -176,7 +176,7 @@ export async function approve(
     __dirname,
     `${PATH_TO_REPO}/frontend/static/quotes/${language}.json`,
   );
-  await git.pull("upstream", "master");
+  await git.pull("upstream", "main");
   if (existsSync(fileDir)) {
     const quoteFile = await readFile(fileDir);
     const quoteObject = parseJsonWithSchema(
@@ -224,7 +224,7 @@ export async function approve(
   }
   await git.add([`frontend/static/quotes/${language}.json`]);
   await git.commit(`Added quote to ${language}.json`);
-  await git.push("origin", "master");
+  await git.push("origin", "main");
   await getNewQuoteCollection().deleteOne({ _id: new ObjectId(quoteId) });
   return { quote, message };
 }

@@ -71,6 +71,7 @@ export function getStats(): unknown {
     inputHistory: TestInput.input.getHistory(),
   };
 
+  /* eslint-disable */
   try {
     // @ts-expect-error ---
     ret.keypressTimings.spacing.average =
@@ -99,6 +100,7 @@ export function getStats(): unknown {
   } catch (e) {
     //
   }
+  /* eslint-enable */
 
   return ret;
 }

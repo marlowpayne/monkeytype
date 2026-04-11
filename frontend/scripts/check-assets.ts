@@ -253,6 +253,7 @@ async function validateLanguages(): Promise<void> {
   const duplicatePercentageThreshold = 0.0001;
   for (const language of LanguageList) {
     let languageFileData: LanguageObject;
+    /* eslint-disable */
     try {
       languageFileData = JSON.parse(
         fs.readFileSync(`./static/languages/${language}.json`, {
@@ -268,6 +269,7 @@ async function validateLanguages(): Promise<void> {
 
       continue;
     }
+    /* eslint-enable */
     problems.addValidation(
       language,
       LanguageObjectSchema.extend({

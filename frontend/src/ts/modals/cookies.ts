@@ -87,7 +87,7 @@ const modal = new AnimatedModal({
       try {
         AdController.showConsentPopup();
       } catch (e) {
-        console.error("Failed to open ad consent UI");
+        console.error(`Failed to open ad consent UI: ${e}`);
         showErrorNotification(
           "Failed to open Ad consent popup. Do you have an ad or cookie popup blocker enabled?",
         );

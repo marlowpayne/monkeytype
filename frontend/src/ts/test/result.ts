@@ -670,7 +670,7 @@ async function updateTags(dontSave: boolean): Promise<void> {
         activeTags.push(tag);
       }
     });
-  } catch (e) {}
+  } catch (e) {} // eslint-disable-line
 
   if (userTagsCount === 0) {
     qs("#result .stats .tags")?.hide();

@@ -6,7 +6,7 @@ env:
 
 on:
   pull_request:
-    branches: [master]
+    branches: [main]
     types: [opened, reopened, synchronize, ready_for_review]
 
 permissions:

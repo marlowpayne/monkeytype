@@ -101,7 +101,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
       }
 
       for (const button of els) {
-        button.on("click", (e) => {
+        button.on("click", (_e) => {
           if (
             button.hasClass("disabled") ||
             button.hasClass("no-auto-handle")
@@ -165,7 +165,7 @@ export default class SettingsGroup<K extends ConfigKey, T = ConfigType[K]> {
         this.setValue(val);
       });
 
-      el.on("input", (e) => {
+      el.on("input", (_e) => {
         if (el.hasClass("disabled") || el.hasClass("no-auto-handle")) {
           return;
         }

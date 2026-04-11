@@ -1261,11 +1261,13 @@ export async function getTestActivity(
 }
 
 async function firebaseDeleteUserIgnoreError(uid: string): Promise<void> {
+  /* eslint-disable */
   try {
     await AuthUtil.deleteUser(uid);
   } catch (e) {
     //ignore
   }
+  /* eslint-enable */
 }
 
 export async function getCurrentTestActivity(

@@ -1,7 +1,7 @@
 {
   "configuration": {
     "results": {
-      "savingEnabled": true
+      "savingEnabled": false
     },
     "users": {
       "signUp": false,

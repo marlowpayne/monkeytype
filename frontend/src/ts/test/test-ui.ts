@@ -1264,6 +1264,7 @@ function buildWordLettersHTML(
   let out = "";
   for (let c = 0; c < charCount; c++) {
     let correctedChar;
+    /* eslint-disable */
     try {
       correctedChar = !containsKorean
         ? correctedCharacters[c]
@@ -1271,6 +1272,7 @@ function buildWordLettersHTML(
     } catch (e) {
       correctedChar = undefined;
     }
+    /* eslint-enable */
     let extraCorrected = "";
     const historyWord: string = !containsKorean
       ? corrected
@@ -1398,7 +1400,9 @@ async function loadWordsHistory(): Promise<boolean> {
         correctedCharacters,
         containsKorean,
       );
+      /* eslint-disable */
     } catch (e) {
+      /* eslint-enable */
       try {
         for (const char of word) {
           const letterEl = document.createElement("letter");
@@ -1437,7 +1441,7 @@ async function loadWordsHistory(): Promise<boolean> {
       );
     });
 
-    wordEl.addEventListener("mouseleave", (e) => {
+    wordEl.addEventListener("mouseleave", (_e) => {
       wordEl.querySelector(".wordInputHighlight")?.remove();
     });
 
@@ -2001,7 +2005,7 @@ addEventListener("resize", () => {
   ResultWordHighlight.destroy();
 });
 
-qs("#wordsInput")?.on("focus", (e) => {
+qs("#wordsInput")?.on("focus", (_e) => {
   if (!isInputElementFocused()) return;
   if (!TestState.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();

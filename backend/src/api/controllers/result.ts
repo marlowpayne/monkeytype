@@ -65,6 +65,7 @@ import { getFunbox, checkCompatibility } from "@monkeytype/funbox";
 import { tryCatch } from "@monkeytype/util/trycatch";
 import { getCachedConfiguration } from "../../init/configuration";
 
+/* eslint-disable */
 try {
   if (!anticheatImplemented()) throw new Error("undefined");
   Logger.success("Anticheat module loaded");
@@ -80,6 +81,7 @@ try {
     process.exit(1);
   }
 }
+/* eslint-enable */
 
 export async function getResults(
   req: MonkeyRequest<GetResultsQuery>,

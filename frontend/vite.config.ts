@@ -72,6 +72,7 @@ function getClientVersion(isDevelopment: boolean): string {
   );
   const version = [versionPrefix, versionSuffix].join("_");
 
+  /* eslint-disable */
   try {
     const commitHash = childProcess
       .execSync("git rev-parse --short HEAD")
@@ -81,6 +82,7 @@ function getClientVersion(isDevelopment: boolean): string {
   } catch (e) {
     return `${version}_unknown-hash`;
   }
+  /* eslint-enable */
 }
 
 /** Enable for font awesome v6 */

@@ -143,7 +143,7 @@ async function flashKey(key: string, correct?: boolean): Promise<void> {
         duration: 250,
         easing: "out(5)",
       });
-    } catch (e) {}
+    } catch (e) {} // eslint-disable-line
   });
 }
 

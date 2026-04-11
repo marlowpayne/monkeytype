@@ -27,13 +27,9 @@ export function roundTo2(num: number): number {
  * @returns The mean of the input array.
  */
 export function mean(array: number[]): number {
-  try {
-    return (
-      array.reduce((previous, current) => (current += previous)) / array.length
-    );
-  } catch (e) {
-    return 0;
-  }
+  return (
+    array.reduce((previous, current) => (current += previous)) / array.length
+  );
 }
 
 /**
@@ -42,15 +38,11 @@ export function mean(array: number[]): number {
  * @returns The standard deviation of the input array.
  */
 export function stdDev(array: number[]): number {
-  try {
-    const n = array.length;
-    const meanValue = mean(array);
-    return Math.sqrt(
-      array.map((x) => Math.pow(x - meanValue, 2)).reduce((a, b) => a + b) / n,
-    );
-  } catch (e) {
-    return 0;
-  }
+  const n = array.length;
+  const meanValue = mean(array);
+  return Math.sqrt(
+    array.map((x) => Math.pow(x - meanValue, 2)).reduce((a, b) => a + b) / n,
+  );
 }
 
 /**
@@ -60,15 +52,11 @@ export function stdDev(array: number[]): number {
  * @returns The median of the input array.
  */
 export function median(arr: number[]): number {
-  try {
-    const mid = Math.floor(arr.length / 2),
-      nums = [...arr].sort((a, b) => a - b);
-    return arr.length % 2 !== 0
-      ? (nums[mid] as number)
-      : ((nums[mid - 1] as number) + (nums[mid] as number)) / 2;
-  } catch (e) {
-    return 0;
-  }
+  const mid = Math.floor(arr.length / 2),
+    nums = [...arr].sort((a, b) => a - b);
+  return arr.length % 2 !== 0
+    ? (nums[mid] as number)
+    : ((nums[mid - 1] as number) + (nums[mid] as number)) / 2;
 }
 
 /**
