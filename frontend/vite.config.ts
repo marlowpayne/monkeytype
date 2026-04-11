@@ -4,7 +4,6 @@ import {
   UserConfig,
   BuildEnvironmentOptions,
   PluginOption,
-  Plugin,
   CSSOptions,
 } from "vite";
 import path from "node:path";
@@ -183,7 +182,7 @@ function getPlugins({
       },
     }),
     useSentry
-      ? (sentryVitePlugin({
+      ? sentryVitePlugin({
           authToken: env["SENTRY_AUTH_TOKEN"],
           org: "monkeytype",
           project: "frontend",
@@ -191,7 +190,7 @@ function getPlugins({
             name: clientVersion,
           },
           applicationKey: "monkeytype-frontend",
-        }) as Plugin)
+        })
       : null,
     injectPreload(),
     minifyJson(),
