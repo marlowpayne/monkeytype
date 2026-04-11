@@ -122,7 +122,7 @@ function getPlugins({
     }),
     Inspect(),
   ];
-
+  /* eslint-disable */
   const prodPlugins: PluginOption[] = [
     fontPreview(),
     fontawesomeSubset(),
@@ -200,6 +200,7 @@ function getPlugins({
     (it) => it !== null,
   );
 }
+/* eslint-enable */
 
 function getBuildOptions({
   enableSourceMaps,
