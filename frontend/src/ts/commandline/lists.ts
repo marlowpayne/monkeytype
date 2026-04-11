@@ -27,7 +27,6 @@ import {
   showSuccessNotification,
   clearAllNotifications,
 } from "../states/notifications";
-import * as VideoAdPopup from "../popups/video-ad-popup";
 import * as TestStats from "../test/test-stats";
 import { Command, CommandsSubgroup } from "./types";
 import { buildCommandForConfigKey } from "./util";
@@ -229,15 +228,6 @@ export const commands: CommandsSubgroup = {
     //other
     ...LoadChallengeCommands,
     ...NavigationCommands,
-    {
-      id: "watchVideoAd",
-      display: "Watch video ad",
-      alias: "support donate",
-      icon: "fa-ad",
-      exec: (): void => {
-        void VideoAdPopup.show();
-      },
-    },
     {
       id: "importSettingsJSON",
       display: "Import settings JSON",
