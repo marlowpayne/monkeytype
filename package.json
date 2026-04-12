@@ -31,6 +31,7 @@
     "dev-be": "turbo run dev --force --filter @monkeytype/backend",
     "dev-fe": "turbo run dev --force --filter @monkeytype/frontend",
     "dev-pkg": "turbo run dev --force --filter=\"./packages/*\"",
+    "reset": "rm -rf ./node_modules && rm -rf ./backend/node_modules && rm -rf ./frontend/node_modules && pnpm i",
     "storybook": "turbo run storybook --force",
     "start": "turbo run start",
     "start-be": "turbo run start --filter @monkeytype/backend",
@@ -94,7 +95,8 @@
   "packageManager": "pnpm@10.28.1",
   "pnpm": {
     "overrides": {
-      "postcss": "8.5.8"
+      "postcss": "8.5.8",
+      "form-data": "4.0.4"
     }
   }
 }
