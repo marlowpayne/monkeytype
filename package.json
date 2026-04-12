@@ -96,7 +96,8 @@
   "pnpm": {
     "overrides": {
       "postcss": "8.5.8",
-      "form-data": "4.0.4"
+      "form-data": "4.0.4",
+      "minimatch": "10.2.4"
     }
   }
 }
