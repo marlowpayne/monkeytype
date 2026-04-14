@@ -1,3 +1,5 @@
+name: marlowtype
+
 services:
   monkeytype-frontend:
     container_name: monkeytype-frontend
