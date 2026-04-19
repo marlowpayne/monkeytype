@@ -9,7 +9,7 @@ COPY backend backend
 
 #gimme pnpm + build
 RUN npm i -g pnpm@10.33.0 && \
-    pnpm i --frozen-lockfile && \
+    CI=true pnpm i --frozen-lockfile && \
     npm run build
 
 #deploy (install all non-dev dependencies in a single node_module folder)

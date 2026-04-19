@@ -14,11 +14,11 @@ COPY docker/frontend/firebase-config-live.ts frontend/src/ts/constants/firebase-
 
 #gimme pnpm + build
 RUN npm i -g pnpm@10.33.0 && \
-    pnpm i --frozen-lockfile && \
+    CI=true pnpm i --frozen-lockfile && \
     npm run build
 
 # COPY to target
-FROM nginx:mainline-alpine
+FROM nginx:1-alpine-slim
 
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
 COPY docker/frontend/nginx.conf /etc/nginx/conf.d/default.conf
