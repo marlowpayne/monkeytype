@@ -277,7 +277,7 @@ function getTargetWords(): string[] {
     targetWords.push(
       Config.mode === "zen"
         ? TestInput.input.current
-        : TestWords.words.getCurrent(),
+        : TestWords.words.getCurrentText(),
     );
   }
 
