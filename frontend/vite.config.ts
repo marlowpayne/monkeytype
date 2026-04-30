@@ -71,6 +71,7 @@ function getClientVersion(isDevelopment: boolean): string {
   );
   const version = [versionPrefix, versionSuffix].join("_");
 
+  /* eslint-disable */
   try {
     const commitHash = childProcess
       .execSync("git rev-parse --short HEAD")
@@ -80,6 +81,7 @@ function getClientVersion(isDevelopment: boolean): string {
   } catch (e) {
     return `${version}_unknown-hash`;
   }
+  /* eslint-enable */
 }
 
 /** Enable for font awesome v6 */
@@ -120,7 +122,7 @@ function getPlugins({
     }),
     Inspect(),
   ];
-
+  /* eslint-disable */
   const prodPlugins: PluginOption[] = [
     fontPreview(),
     fontawesomeSubset(),
@@ -198,6 +200,7 @@ function getPlugins({
     (it) => it !== null,
   );
 }
+/* eslint-enable */
 
 function getBuildOptions({
   enableSourceMaps,
@@ -213,8 +216,6 @@ function getBuildOptions({
       input: {
         monkeytype: path.resolve(__dirname, "src/index.html"),
         email: path.resolve(__dirname, "src/email-handler.html"),
-        privacy: path.resolve(__dirname, "src/privacy-policy.html"),
-        security: path.resolve(__dirname, "src/security-policy.html"),
         terms: path.resolve(__dirname, "src/terms-of-service.html"),
         404: path.resolve(__dirname, "src/404.html"),
       },

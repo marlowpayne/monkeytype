@@ -16,7 +16,6 @@ import * as Logger from "./utils/logger";
 import * as DB from "./db";
 import "./ui";
 import "./elements/settings/account-settings-notice";
-import "./controllers/ad-controller";
 import { Config } from "./config/store";
 import * as TestStats from "./test/test-stats";
 import * as Replay from "./test/replay";
@@ -31,7 +30,6 @@ import "./input/listeners";
 import "./controllers/route-controller";
 import * as Account from "./pages/account";
 import "./elements/no-css";
-import { egVideoListener } from "./popups/video-ad-popup";
 import "./legacy-states/connection";
 import "./test/tts";
 import { addToGlobal } from "./utils/misc";
@@ -98,7 +96,6 @@ addToGlobal({
   enableTimerDebug: TestTimer.enableTimerDebug,
   getTimerStats: TestTimer.getTimerStats,
   toggleSmoothedBurst: Result.toggleSmoothedBurst,
-  egVideoListener: egVideoListener,
   toggleDebugLogs: Logger.toggleDebugLogs,
   toggleSentryDebug: Sentry.toggleDebug,
   qs: qs,

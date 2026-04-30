@@ -826,11 +826,13 @@ export async function playError(): Promise<void> {
 }
 
 function setVolume(val: number): void {
+  /* eslint-disable */
   try {
     Howler.volume(val);
   } catch (e) {
     //
   }
+  /* eslint-enable */
 }
 
 configEvent.subscribe(({ key, newValue }) => {

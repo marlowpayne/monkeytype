@@ -231,7 +231,7 @@ function incrementLetterIndex(): void {
   } catch (e) {
     //out of words
     settings = null;
-    console.log("pace caret out of words");
+    console.log(`pace caret out of words: ${e}`);
     caret.hide();
     return;
   }

@@ -31,11 +31,16 @@
     "dev-be": "turbo run dev --force --filter @monkeytype/backend",
     "dev-fe": "turbo run dev --force --filter @monkeytype/frontend",
     "dev-pkg": "turbo run dev --force --filter=\"./packages/*\"",
+    "reset": "rm -rf ./node_modules && rm -rf ./backend/node_modules && rm -rf ./frontend/node_modules && pnpm i",
     "storybook": "turbo run storybook --force",
     "start": "turbo run start",
     "start-be": "turbo run start --filter @monkeytype/backend",
     "start-fe": "turbo run start --filter @monkeytype/frontend",
     "docker": "cd backend && npm run docker",
+    "docker-build-fe": "docker buildx build --platform linux/amd64,linux/arm64 --progress=plain --no-cache -t marlow2026/marlowtype:monkeytype-frontend . -f ./docker/frontend/Dockerfile",
+    "docker-build-be": "docker buildx build --platform linux/amd64,linux/arm64 --progress=plain --no-cache -t marlow2026/marlowtype:monkeytype-backend . -f ./docker/backend/Dockerfile",
+    "docker-checks": "pnpm fmt && turbo lint test integration-test check-assets --force",
+    "docker-push": "docker login && pnpm docker-checks && pnpm docker-build-fe && docker push marlow2026/marlowtype:monkeytype-frontend && pnpm docker-build-be && docker push marlow2026/marlowtype:monkeytype-backend",
     "audit-fe": "cd frontend && npm run audit",
     "preview-fe": "monkeytype-release --preview-fe",
     "release": "monkeytype-release",
@@ -47,8 +52,8 @@
     "hotfix-fe": "monkeytype-release --hotfix --fe",
     "hotfix-be": "monkeytype-release --hotfix --be",
     "hotfix-dry": "monkeytype-release --hotfix --dry",
-    "format-check": "oxfmt . --check",
-    "format-fix": "oxfmt .",
+    "fmt-check": "oxfmt . --check",
+    "fmt": "oxfmt .",
     "lint-styles": "stylelint \"**/*.{scss,css}\"",
     "lint-styles-fix": "stylelint \"**/*.{scss,css}\" --fix",
     "lint-json-assets": "turbo lint-json --filter @monkeytype/frontend",
@@ -96,10 +101,24 @@
   "engines": {
     "node": ">=24.0.0 <25"
   },
-  "packageManager": "pnpm@10.28.1",
+  "packageManager": "pnpm@10.33.0",
   "pnpm": {
     "overrides": {
-      "postcss": "8.5.8"
+      "postcss": "8.5.8",
+      "form-data": "4.0.4",
+      "minimatch": "10.2.4",
+      "protobufjs": "7.5.5",
+      "lodash": "4.18.1",
+      "path-to-regexp": "8.4.0",
+      "jws": "4.0.1",
+      "glob": "11.1.0",
+      "brace-expansion": "5.0.5",
+      "qs": "6.14.2",
+      "yaml": "2.8.3",
+      "picomatch": "4.0.4",
+      "fast-xml-parser": "5.7.0",
+      "uuid": "14.0.0",
+      "@tootallnate/once": "3.0.1"
     }
   }
 }

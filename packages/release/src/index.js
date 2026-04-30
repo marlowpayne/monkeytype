@@ -59,18 +59,17 @@ const runProjectRootCommand = (command, force) => {
 };
 
 const checkBranchSync = () => {
-  console.log("Checking if local branch is master...");
+  console.log("Checking if local branch is main...");
   const currentBranch = runProjectRootCommand(
     "git branch --show-current",
   ).trim();
-  if (currentBranch !== "master") {
-    console.error(
-      "Local branch is not master. Please checkout the master branch.",
-    );
+  console.log(`Current branch: ${currentBranch}`);
+  if (currentBranch !== "main") {
+    console.error("Local branch is not main. Please checkout the main branch.");
     process.exit(1);
   }
 
-  console.log("Checking if local master branch is in sync with origin...");
+  console.log("Checking if local main branch is in sync with origin...");
 
   if (noSyncCheck) {
     console.log("Skipping sync check.");
@@ -81,15 +80,15 @@ const checkBranchSync = () => {
       // Fetch the latest changes from the remote repository
       runProjectRootCommand("git fetch origin");
 
-      // Get the commit hashes of the local and remote master branches
-      const localMaster = runProjectRootCommand("git rev-parse master").trim();
-      const remoteMaster = runProjectRootCommand(
-        "git rev-parse origin/master",
+      // Get the commit hashes of the local and remote main branches
+      const localMain = runProjectRootCommand("git rev-parse main").trim();
+      const remoteMain = runProjectRootCommand(
+        "git rev-parse origin/main",
       ).trim();
 
-      if (localMaster !== remoteMaster) {
+      if (localMain !== remoteMain) {
         console.error(
-          "Local master branch is not in sync with origin. Please pull the latest changes before proceeding.",
+          "Local main branch is not in sync with origin. Please pull the latest changes before proceeding.",
         );
         process.exit(1);
       }

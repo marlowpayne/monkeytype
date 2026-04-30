@@ -160,7 +160,7 @@ export function startTest(now: number): boolean {
     ) {
       PaceCaret.start();
     }
-  } catch (e) {}
+  } catch (e) {} // eslint-disable-line
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(now);
   void TestTimer.start();

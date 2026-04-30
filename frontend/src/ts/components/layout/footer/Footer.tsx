@@ -81,24 +81,6 @@ export function Footer(): JSXElement {
             }}
             href="/terms-of-service.html"
           />
-          <Button
-            href="/security-policy.html"
-            variant="text"
-            text="security"
-            fa={{
-              icon: "fa-shield-alt",
-              fixedWidth: true,
-            }}
-          />
-          <Button
-            href="/privacy-policy.html"
-            variant="text"
-            text="privacy"
-            fa={{
-              icon: "fa-lock",
-              fixedWidth: true,
-            }}
-          />
         </div>
         <div class="flex flex-col items-end text-right lg:flex-row">
           <ThemeIndicator />

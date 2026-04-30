@@ -2,11 +2,11 @@ name: Check formatting
 
 env:
   PNPM_VERSION: "10.28.1"
-  NODE_VERSION: "24.11.0"
+  NODE_VERSION: "24.15.0"
 
 on:
   pull_request:
-    branches: [master]
+    branches: [main]
     types: [opened, reopened, synchronize, ready_for_review]
 
 permissions:

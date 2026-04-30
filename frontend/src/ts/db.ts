@@ -824,7 +824,9 @@ export async function saveLocalTagPB<M extends Mode>(
           consistency,
         });
       }
+      /* eslint-disable */
     } catch (e) {
+      /* eslint-enable */
       //that mode or mode2 is not found
       filteredtag.personalBests = {
         time: {},

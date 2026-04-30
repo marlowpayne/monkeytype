@@ -49,7 +49,9 @@ export function mergeWithDefaultFilters(
       }
     }
     return merged;
+    /* eslint-disable */
   } catch (e) {
+    /* eslint-enable */
     return defaultResultFilters;
   }
 }

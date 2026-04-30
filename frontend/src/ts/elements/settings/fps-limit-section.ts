@@ -50,4 +50,4 @@ input.on("keypress", (e) => {
   }
 });
 
-input.on("focusout", (e) => saveFromInput());
+input.on("focusout", (_e) => saveFromInput());

@@ -76,7 +76,7 @@ function appendButtons(): void {
     button.classList.add("toggleTag");
     button.setAttribute("data-tag-id", tagId);
     button.innerHTML = tag?.display ?? "unknown tag";
-    button.addEventListener("click", (e) => {
+    button.addEventListener("click", (_e) => {
       toggleTag(tagId);
       updateActiveButtons();
     });
@@ -158,7 +158,7 @@ async function save(): Promise<void> {
 const modal = new AnimatedModal({
   dialogId: "editResultTagsModal",
   setup: async (modalEl): Promise<void> => {
-    modalEl.qs("button.saveButton")?.on("click", (e) => {
+    modalEl.qs("button.saveButton")?.on("click", (_e) => {
       if (areUnsortedArraysEqual(state.startingTags, state.tags)) {
         hide();
         return;

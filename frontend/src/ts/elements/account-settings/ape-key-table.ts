@@ -255,13 +255,13 @@ function refreshList(): void {
   });
   for (const tr of table?.qsa("tr") ?? []) {
     const keyid = tr.getAttribute("keyid") as string;
-    tr.qs("button.toggleActive")?.on("click", (e) => {
+    tr.qs("button.toggleActive")?.on("click", (_e) => {
       void toggleActiveKey(keyid);
     });
-    tr.qs("button.deleteButton")?.on("click", (e) => {
+    tr.qs("button.deleteButton")?.on("click", (_e) => {
       deleteApeKeyModal.show([keyid], {});
     });
-    tr.qs("button.editButton")?.on("click", (e) => {
+    tr.qs("button.editButton")?.on("click", (_e) => {
       editApeKey.show([keyid], {});
     });
   }

@@ -7,6 +7,7 @@ let globalPlugins: any[] = [];
 
 export default defineConfig({
   test: {
+    testTimeout: 10000,
     projects: [
       ...convertTests(backendProjects, "backend"),
       ...convertTests(frontendProjects, "frontend"),

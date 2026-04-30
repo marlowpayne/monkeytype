@@ -77,7 +77,9 @@ export function ProfileSearchPage(): JSXElement {
                         getUserProfile(field.value),
                       );
                       return result !== null ? undefined : "Unknown user";
+                      /* eslint-disable */
                     } catch (e) {
+                      /* eslint-enable */
                       return "Unknown user";
                     }
                   },

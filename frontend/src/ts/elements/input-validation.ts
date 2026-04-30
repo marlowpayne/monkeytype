@@ -296,5 +296,5 @@ export function handleConfigInput<T extends ConfigKey>({
       handleStore();
     }
   });
-  input.on("focusout", (e) => handleStore());
+  input.on("focusout", (_e) => handleStore());
 }

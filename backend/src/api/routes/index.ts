@@ -16,7 +16,6 @@ import configuration from "./configuration";
 import { version } from "../../version";
 import leaderboards from "./leaderboards";
 import connections from "./connections";
-import addSwaggerMiddlewares from "./swagger";
 import { MonkeyResponse } from "../../utils/monkey-response";
 import {
   Application,
@@ -153,8 +152,6 @@ function applyDevApiRoutes(app: Application): void {
 }
 
 function applyApiRoutes(app: Application): void {
-  addSwaggerMiddlewares(app);
-
   app.use(
     (
       req: ExpressRequestWithContext,

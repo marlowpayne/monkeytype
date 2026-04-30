@@ -479,10 +479,10 @@ const modal = new AnimatedModal({
       activePopup?.exec();
     });
   },
-  customEscapeHandler: (e): void => {
+  customEscapeHandler: (_e): void => {
     hide();
   },
-  customWrapperClickHandler: (e): void => {
+  customWrapperClickHandler: (_e): void => {
     activePopup?.afterClickAway?.();
     hide();
   },
