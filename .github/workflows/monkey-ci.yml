@@ -102,6 +102,10 @@ jobs:
         name: Install dependencies
         run: CI=true pnpm i --frozen-lockfile
 
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Install Turbo
+        run: npm i turbo-linux-x64 --no-save
+
   ci-be:
     name: ci-be
     needs: [pre-ci, prime-cache]
@@ -141,6 +145,10 @@ jobs:
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: CI=true pnpm i --frozen-lockfile
+
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Install Turbo
+        run: npm i turbo-linux-x64 --no-save
 
       - name: Check lint
         run: npm run lint-fast-be && npm run lint-be
@@ -194,6 +202,10 @@ jobs:
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: CI=true pnpm i --frozen-lockfile
+
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Install Turbo
+        run: npm i turbo-linux-x64 --no-save
 
       - name: Check lint
         run: npm run lint-fast-fe && npm run lint-fe
@@ -262,6 +274,10 @@ jobs:
         name: Install dependencies
         run: CI=true pnpm i --frozen-lockfile
 
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Install Turbo
+        run: npm i turbo-linux-x64 --no-save
+
       - name: Lint styles
         if: steps.filter.outputs.styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
         run: npm run lint-styles
@@ -320,6 +336,10 @@ jobs:
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
         run: CI=true pnpm i --frozen-lockfile
+
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Install Turbo
+        run: npm i turbo-linux-x64 --no-save
 
       - name: Check lint
         run: npm run lint-fast-pkg && npm run lint-pkg
