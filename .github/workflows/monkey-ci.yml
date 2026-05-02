@@ -11,7 +11,7 @@ permissions:
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize]
+    types: [opened, reopened, synchronize, labeled, ready_for_review]
 
 concurrency:
   group: group-${{ github.ref }}-${{ github.workflow }}
