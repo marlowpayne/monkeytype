@@ -100,11 +100,7 @@ jobs:
 
       - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
         name: Install dependencies
-        run: CI=true pnpm i --frozen-lockfile
-
-      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
-        name: Install Turbo
-        run: pnpm add turbo -Dw
+        run: CI=true pnpm install --frozen-lockfile
 
   ci-be:
     name: ci-be
@@ -142,13 +138,8 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install dependencies
-        run: CI=true pnpm i --frozen-lockfile
-
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install Turbo
-        run: pnpm add turbo -Dw
+      - name: Install dependencies
+        run: CI=true pnpm install --frozen-lockfile
 
       - name: Check lint
         run: npm run lint-fast-be && npm run lint-be
@@ -199,13 +190,8 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install dependencies
-        run: CI=true pnpm i --frozen-lockfile
-
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install Turbo
-        run: pnpm add turbo -Dw
+      - name: Install dependencies
+        run: CI=true pnpm install --frozen-lockfile
 
       - name: Check lint
         run: npm run lint-fast-fe && npm run lint-fe
@@ -270,13 +256,8 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install dependencies
-        run: CI=true pnpm i --frozen-lockfile
-
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install Turbo
-        run: pnpm add turbo -Dw
+      - name: Install dependencies
+        run: CI=true pnpm install --frozen-lockfile
 
       - name: Lint styles
         if: steps.filter.outputs.styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
@@ -333,13 +314,8 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install dependencies
-        run: CI=true pnpm i --frozen-lockfile
-
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
-        name: Install Turbo
-        run: pnpm add turbo -Dw
+      - name: Install dependencies
+        run: CI=true pnpm install --frozen-lockfile
 
       - name: Check lint
         run: npm run lint-fast-pkg && npm run lint-pkg
