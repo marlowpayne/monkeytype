@@ -112,12 +112,6 @@ jobs:
             backend
             packages
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
@@ -132,17 +126,23 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Install dependencies
-        run: CI=true pnpm install --frozen-lockfile
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v5
+      #   with:
+      #     node-version: ${{ env.NODE_VERSION }}
+      #     cache: "pnpm"
+
+      # - name: Install dependencies
+      #   run: CI=true pnpm install --frozen-lockfile
 
       - name: Check lint
-        run: npm run lint-fast-be && npm run lint-be
+        run: pnpm lint-fast-be && pnpm lint-be
 
       - name: Build
-        run: npm run build-be
+        run: pnpm build-be
 
       - name: Test
-        run: npm run test-be
+        run: pnpm test-be
 
   ci-fe:
     name: ci-fe
@@ -155,12 +155,6 @@ jobs:
           sparse-checkout: |
             frontend
             packages
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
 
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
@@ -180,17 +174,23 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Install dependencies
-        run: CI=true pnpm install --frozen-lockfile
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v5
+      #   with:
+      #     node-version: ${{ env.NODE_VERSION }}
+      #     cache: "pnpm"
+
+      # - name: Install dependencies
+      #   run: CI=true pnpm install --frozen-lockfile
 
       - name: Check lint
-        run: npm run lint-fast-fe && npm run lint-fe
+        run: pnpm lint-fast-fe && pnpm lint-fe
 
       - name: Build
-        run: npm run build-fe
+        run: pnpm build-fe
 
       - name: Test
-        run: npm run test-fe
+        run: pnpm test-fe
 
   ci-assets:
     name: ci-assets
@@ -222,12 +222,6 @@ jobs:
               - 'frontend/static/webfonts/**'
               - 'frontend/static/challenges/**'
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
@@ -242,28 +236,34 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Install dependencies
-        run: CI=true pnpm install --frozen-lockfile
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v5
+      #   with:
+      #     node-version: ${{ env.NODE_VERSION }}
+      #     cache: "pnpm"
+
+      # - name: Install dependencies
+      #   run: CI=true pnpm install --frozen-lockfile
 
       - name: Lint styles
         if: steps.filter.outputs.styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: npm run lint-styles
+        run: pnpm lint-styles
 
       - name: Lint JSON
         if: steps.filter.outputs.json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: npm run lint-json-assets
+        run: pnpm lint-json-assets
 
       - name: Validate language assets
         if: steps.filter.outputs.languages == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: npm run check-assets-languages
+        run: pnpm check-assets-languages
 
       - name: Validate quote assets
         if: steps.filter.outputs.quotes == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: npm run check-assets-quotes
+        run: pnpm check-assets-quotes
 
       - name: Validate other assets
         if: steps.filter.outputs.others == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: npm run check-assets-others
+        run: pnpm check-assets-others
 
   ci-pkg:
     name: ci-pkg
@@ -276,12 +276,6 @@ jobs:
           sparse-checkout: |
             packages
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
@@ -296,14 +290,20 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Install dependencies
-        run: CI=true pnpm install --frozen-lockfile
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v5
+      #   with:
+      #     node-version: ${{ env.NODE_VERSION }}
+      #     cache: "pnpm"
+
+      # - name: Install dependencies
+      #   run: CI=true pnpm install --frozen-lockfile
 
       - name: Check lint
-        run: npm run lint-fast-pkg && npm run lint-pkg
+        run: pnpm lint-fast-pkg && pnpm lint-pkg
 
       - name: Build
-        run: npm run build-pkg
+        run: pnpm build-pkg
 
       - name: Test
-        run: npm run test-pkg
+        run: pnpm test-pkg
