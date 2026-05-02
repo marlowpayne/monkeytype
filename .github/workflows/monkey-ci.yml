@@ -104,7 +104,7 @@ jobs:
 
       - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
         name: Install Turbo
-        run: npm i turbo-linux-x64 --no-save
+        run: pnpm i turbo-linux-x64 --force
 
   ci-be:
     name: ci-be
@@ -148,7 +148,7 @@ jobs:
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install Turbo
-        run: npm i turbo-linux-x64 --no-save
+        run: pnpm i turbo-linux-x64 --force
 
       - name: Check lint
         run: npm run lint-fast-be && npm run lint-be
@@ -205,7 +205,7 @@ jobs:
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install Turbo
-        run: npm i turbo-linux-x64 --no-save
+        run: pnpm i turbo-linux-x64 --force
 
       - name: Check lint
         run: npm run lint-fast-fe && npm run lint-fe
@@ -276,7 +276,7 @@ jobs:
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install Turbo
-        run: npm i turbo-linux-x64 --no-save
+        run: pnpm i turbo-linux-x64 --force
 
       - name: Lint styles
         if: steps.filter.outputs.styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
@@ -339,7 +339,7 @@ jobs:
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install Turbo
-        run: npm i turbo-linux-x64 --no-save
+        run: pnpm i turbo-linux-x64 --force
 
       - name: Check lint
         run: npm run lint-fast-pkg && npm run lint-pkg
