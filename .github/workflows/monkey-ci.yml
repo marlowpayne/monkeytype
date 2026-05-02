@@ -94,7 +94,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          package-manager-cache: false
+          cache: "pnpm"
 
       - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
         name: Install dependencies
@@ -130,7 +130,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          package-manager-cache: false
+          cache: "pnpm"
 
       # - name: Install dependencies
       #   run: CI=true pnpm install --frozen-lockfile
@@ -178,7 +178,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          package-manager-cache: false
+          cache: "pnpm"
 
       # - name: Install dependencies
       #   run: CI=true pnpm install --frozen-lockfile
@@ -240,7 +240,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          package-manager-cache: false
+          cache: "pnpm"
 
       # - name: Install dependencies
       #   run: CI=true pnpm install --frozen-lockfile
@@ -294,7 +294,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          package-manager-cache: false
+          cache: "pnpm"
 
       # - name: Install dependencies
       #   run: CI=true pnpm install --frozen-lockfile
