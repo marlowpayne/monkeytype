@@ -88,21 +88,21 @@ jobs:
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
           lookup-only: true
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
         name: Full checkout
         uses: actions/checkout@v4
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
         name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
         name: Install dependencies
         run: CI=true pnpm i --frozen-lockfile
 
-      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
         name: Install Turbo
         run: npm i turbo-linux-x64 --no-save
 
