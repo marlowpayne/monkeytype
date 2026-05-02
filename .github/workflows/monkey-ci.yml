@@ -63,11 +63,8 @@ jobs:
     needs: [pre-ci]
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - name: Sparse checkout pnpm-lock
+      - name: Full checkout
         uses: actions/checkout@v5
-        with:
-          sparse-checkout: |
-            pnpm-lock.yaml
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
@@ -75,29 +72,23 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
           cache: true
 
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v5
-        env:
-          cache-name: node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
-          lookup-only: true
+      # - name: Cache node modules
+      #   id: cache-pnpm
+      #   uses: actions/cache@v5
+      #   env:
+      #     cache-name: node-modules
+      #   with:
+      #     path: node_modules
+      #     key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+      #     lookup-only: true
 
-      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
-        name: Full checkout
-        uses: actions/checkout@v5
-
-      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
-        name: Set up Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "pnpm"
 
-      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
-        name: Install dependencies
+      - name: Install dependencies
         run: CI=true pnpm install --frozen-lockfile
 
   ci-be:
@@ -116,15 +107,16 @@ jobs:
         uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
+          cache: true
 
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v5
-        env:
-          cache-name: node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+      # - name: Cache node modules
+      #   id: cache-pnpm
+      #   uses: actions/cache@v5
+      #   env:
+      #     cache-name: node-modules
+      #   with:
+      #     path: node_modules
+      #     key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
@@ -164,15 +156,16 @@ jobs:
         uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
+          cache: true
 
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v5
-        env:
-          cache-name: node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+      # - name: Cache node modules
+      #   id: cache-pnpm
+      #   uses: actions/cache@v5
+      #   env:
+      #     cache-name: node-modules
+      #   with:
+      #     path: node_modules
+      #     key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
@@ -226,15 +219,16 @@ jobs:
         uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
+          cache: true
 
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v5
-        env:
-          cache-name: node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+      # - name: Cache node modules
+      #   id: cache-pnpm
+      #   uses: actions/cache@v5
+      #   env:
+      #     cache-name: node-modules
+      #   with:
+      #     path: node_modules
+      #     key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
@@ -280,15 +274,16 @@ jobs:
         uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
+          cache: true
 
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v5
-        env:
-          cache-name: node-modules
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+      # - name: Cache node modules
+      #   id: cache-pnpm
+      #   uses: actions/cache@v5
+      #   env:
+      #     cache-name: node-modules
+      #   with:
+      #     path: node_modules
+      #     key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
