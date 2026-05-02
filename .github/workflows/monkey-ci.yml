@@ -1,7 +1,7 @@
-name: Monkey CI
+name: Monkey CI - PRs
 
 env:
-  PNPM_VERSION: "10.28.1"
+  PNPM_VERSION: "10.33.0"
   NODE_VERSION: "24.15.0"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
 
@@ -11,9 +11,7 @@ permissions:
 on:
   pull_request:
     branches: [main]
-    types: [opened, reopened, synchronize, ready_for_review]
-  push:
-    branches: [main]
+    types: [opened, synchronize]
 
 concurrency:
   group: group-${{ github.ref }}-${{ github.workflow }}
@@ -21,7 +19,6 @@ concurrency:
 
 jobs:
   pre-ci:
-    if: github.event.pull_request.draft == false || contains(github.event.pull_request.labels.*.name, 'force-ci') || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     name: pre-ci
     runs-on: ubuntu-latest
     outputs:
@@ -33,8 +30,6 @@ jobs:
     steps:
       - name: Full checkout
         uses: actions/checkout@v4
-        # paths filter doesn't need checkout on pr
-        if: github.event_name != 'pull_request'
 
       - name: Detect changes
         uses: dorny/paths-filter@v4
@@ -52,12 +47,6 @@ jobs:
               - 'frontend/package.json'
             pkg-src:
               - 'packages/**/*'
-            anti-cheat:
-              - 'backend/**/anticheat/**'
-
-      - name: Check Anti-cheat
-        if: steps.filter.outputs.anti-cheat == 'true' && !contains(github.event.pull_request.labels.*.name, 'force-ci') && !contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: exit 1
 
       - name: Export changes
         id: export-changes
@@ -73,7 +62,7 @@ jobs:
     needs: [pre-ci]
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - name: Checkout pnpm-lock
+      - name: Sparse checkout pnpm-lock
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
@@ -111,7 +100,7 @@ jobs:
 
       - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
         name: Install dependencies
-        run: pnpm install
+        run: CI=true pnpm i --frozen-lockfile
 
   ci-be:
     name: ci-be
@@ -149,8 +138,9 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Install dependencies
-        run: pnpm install
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: CI=true pnpm i --frozen-lockfile
 
       - name: Check lint
         run: npm run lint-fast-be && npm run lint-be
@@ -201,8 +191,9 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Install dependencies
-        run: pnpm install
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: CI=true pnpm i --frozen-lockfile
 
       - name: Check lint
         run: npm run lint-fast-fe && npm run lint-fe
@@ -267,27 +258,28 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Install dependencies
-        run: pnpm install
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: CI=true pnpm i --frozen-lockfile
 
       - name: Lint styles
-        if: steps.filter.outputs.styles == 'true'
+        if: steps.filter.outputs.styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
         run: npm run lint-styles
 
       - name: Lint JSON
-        if: steps.filter.outputs.json == 'true'
+        if: steps.filter.outputs.json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
         run: npm run lint-json-assets
 
       - name: Validate language assets
-        if: steps.filter.outputs.languages == 'true'
+        if: steps.filter.outputs.languages == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
         run: npm run check-assets-languages
 
       - name: Validate quote assets
-        if: steps.filter.outputs.quotes == 'true'
+        if: steps.filter.outputs.quotes == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
         run: npm run check-assets-quotes
 
       - name: Validate other assets
-        if: steps.filter.outputs.others == 'true'
+        if: steps.filter.outputs.others == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
         run: npm run check-assets-others
 
   ci-pkg:
@@ -325,8 +317,9 @@ jobs:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Install dependencies
-        run: pnpm install
+      - if: ${{ steps.cache-pnpm.outputs.cache-hit != 'true' }}
+        name: Install dependencies
+        run: CI=true pnpm i --frozen-lockfile
 
       - name: Check lint
         run: npm run lint-fast-pkg && npm run lint-pkg
