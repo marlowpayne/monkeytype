@@ -4,6 +4,7 @@ env:
   PNPM_VERSION: "10.33.0"
   NODE_VERSION: "24.15.0"
   RECAPTCHA_SITE_KEY: "6Lc-V8McAAAAAJ7s6LGNe7MBZnRiwbsbiWts87aj"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
   contents: read
@@ -29,7 +30,7 @@ jobs:
 
     steps:
       - name: Full checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Detect changes
         uses: dorny/paths-filter@v4
@@ -62,44 +63,22 @@ jobs:
     needs: [pre-ci]
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - name: Sparse checkout pnpm-lock
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            pnpm-lock.yaml
+      - name: Full checkout
+        uses: actions/checkout@v5
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
+          cache: true
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v4
-        env:
-          cache-name: node-modules
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
-          lookup-only: true
-
-      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
-        name: Full checkout
-        uses: actions/checkout@v4
-
-      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
-        name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
-      - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
-        name: Install dependencies
+      - name: Install dependencies
         run: CI=true pnpm install --frozen-lockfile
 
   ci-be:
@@ -108,47 +87,35 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-be == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             backend
             packages
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
+          cache: true
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v4
-        env:
-          cache-name: node-modules
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Install dependencies
         run: CI=true pnpm install --frozen-lockfile
 
       - name: Check lint
-        run: npm run lint-fast-be && npm run lint-be
+        run: pnpm lint-fast-be && pnpm lint-be
 
       - name: Build
-        run: npm run build-be
+        run: pnpm build-be
 
       - name: Test
-        run: npm run test-be
+        run: pnpm test-be
 
   ci-fe:
     name: ci-fe
@@ -156,51 +123,39 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-fe == 'true' || needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             frontend
             packages
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
 
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
         run: mv ./firebase-config-example.ts ./firebase-config.ts && cp ./firebase-config.ts ./firebase-config-live.ts
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
+          cache: true
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v4
-        env:
-          cache-name: node-modules
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Install dependencies
         run: CI=true pnpm install --frozen-lockfile
 
       - name: Check lint
-        run: npm run lint-fast-fe && npm run lint-fe
+        run: pnpm lint-fast-fe && pnpm lint-fe
 
       - name: Build
-        run: npm run build-fe
+        run: pnpm build-fe
 
       - name: Test
-        run: npm run test-fe
+        run: pnpm test-fe
 
   ci-assets:
     name: ci-assets
@@ -208,7 +163,7 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.assets-or-styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             frontend
@@ -232,52 +187,40 @@ jobs:
               - 'frontend/static/webfonts/**'
               - 'frontend/static/challenges/**'
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
+          cache: true
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v4
-        env:
-          cache-name: node-modules
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Install dependencies
         run: CI=true pnpm install --frozen-lockfile
 
       - name: Lint styles
         if: steps.filter.outputs.styles == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: npm run lint-styles
+        run: pnpm lint-styles
 
       - name: Lint JSON
         if: steps.filter.outputs.json == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: npm run lint-json-assets
+        run: pnpm lint-json-assets
 
       - name: Validate language assets
         if: steps.filter.outputs.languages == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: npm run check-assets-languages
+        run: pnpm check-assets-languages
 
       - name: Validate quote assets
         if: steps.filter.outputs.quotes == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: npm run check-assets-quotes
+        run: pnpm check-assets-quotes
 
       - name: Validate other assets
         if: steps.filter.outputs.others == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
-        run: npm run check-assets-others
+        run: pnpm check-assets-others
 
   ci-pkg:
     name: ci-pkg
@@ -285,43 +228,31 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.pre-ci.outputs.should-build-pkg == 'true' || contains(github.event.pull_request.labels.*.name, 'force-full-ci')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             packages
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
+          cache: true
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Cache node modules
-        id: cache-pnpm
-        uses: actions/cache@v4
-        env:
-          cache-name: node-modules
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Install dependencies
         run: CI=true pnpm install --frozen-lockfile
 
       - name: Check lint
-        run: npm run lint-fast-pkg && npm run lint-pkg
+        run: pnpm lint-fast-pkg && pnpm lint-pkg
 
       - name: Build
-        run: npm run build-pkg
+        run: pnpm build-pkg
 
       - name: Test
-        run: npm run test-pkg
+        run: pnpm test-pkg
