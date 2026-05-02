@@ -73,11 +73,7 @@ jobs:
         uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          cache: true
 
       - name: Cache node modules
         id: cache-pnpm
@@ -85,7 +81,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ${{ env.STORE_PATH }}
+          path: node_modules
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
           lookup-only: true
 
@@ -98,6 +94,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - if: steps.cache-pnpm.outputs.cache-hit != 'true' || contains(github.event.pull_request.labels.*.name, 'refresh-ci-cache')
         name: Install dependencies
@@ -119,16 +116,12 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Cache node modules
         id: cache-pnpm
@@ -136,7 +129,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ${{ env.STORE_PATH }}
+          path: node_modules
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install dependencies
@@ -167,6 +160,7 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Create stub firebase config
         working-directory: ./frontend/src/ts/constants
@@ -177,18 +171,13 @@ jobs:
         with:
           version: ${{ env.PNPM_VERSION }}
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
       - name: Cache node modules
         id: cache-pnpm
         uses: actions/cache@v5
         env:
           cache-name: node-modules
         with:
-          path: ${{ env.STORE_PATH }}
+          path: node_modules
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install dependencies
@@ -237,16 +226,12 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Cache node modules
         id: cache-pnpm
@@ -254,7 +239,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ${{ env.STORE_PATH }}
+          path: node_modules
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install dependencies
@@ -295,16 +280,12 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "pnpm"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
           version: ${{ env.PNPM_VERSION }}
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - name: Cache node modules
         id: cache-pnpm
@@ -312,7 +293,7 @@ jobs:
         env:
           cache-name: node-modules
         with:
-          path: ${{ env.STORE_PATH }}
+          path: node_modules
           key: ${{ runner.os }}-${{ env.NODE_VERSION }}-build-${{ env.cache-name }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install dependencies
