@@ -5,7 +5,6 @@ import {
 } from "./states/notifications";
 import { getAuthenticatedUser } from "./firebase";
 import { isAuthenticated } from "./states/core";
-import { lastElementFromArray } from "./utils/arrays";
 import * as Dates from "date-fns";
 import {
   TestActivityCalendar,
@@ -23,9 +22,7 @@ import {
 import {
   getDefaultSnapshot,
   Snapshot,
-  SnapshotPreset,
   SnapshotResult,
-  SnapshotUserTag,
 } from "./constants/default-snapshot";
 import { getFirstDayOfTheWeek } from "./utils/date-and-time";
 import { Language } from "@monkeytype/schemas/languages";
@@ -35,6 +32,8 @@ import {
   get as getServerConfiguration,
 } from "./ape/server-configuration";
 import { Connection } from "@monkeytype/schemas/connections";
+import { insertLocalResult } from "./collections/results";
+import { fillResultFilterPresetsCollection } from "./collections/result-filter-presets";
 import {
   setLastResult,
   setSnapshot as setSolidSnapshot,
@@ -42,6 +41,9 @@ import {
 import { XpBreakdown } from "@monkeytype/schemas/results";
 import { setXpBarData } from "./states/header";
 import { FunboxMetadata } from "@monkeytype/funbox";
+import { fillTagsCollection, __nonReactive } from "./collections/tags";
+import { updateTagsInFilterStorage } from "./states/result-filters";
+import { fillPresetsCollection } from "./collections/presets";
 
 let dbSnapshot: Snapshot | undefined;
 const firstDayOfTheWeek = getFirstDayOfTheWeek();
@@ -175,7 +177,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
     snap.inboxUnreadSize = userData.inboxUnreadSize ?? 0;
     snap.streak = userData?.streak?.length ?? 0;
     snap.maxStreak = userData?.streak?.maxLength ?? 0;
-    snap.filterPresets = userData.resultFilterPresets ?? [];
     snap.isPremium = userData?.isPremium ?? false;
     snap.allTimeLbs = userData.allTimeLbs;
 
@@ -196,62 +197,11 @@ export async function initSnapshot(): Promise<Snapshot | false> {
 
     snap.customThemes = userData.customThemes ?? [];
 
-    // const userDataTags: MonkeyTypes.UserTagWithDisplay[] = userData.tags ?? [];
+    fillTagsCollection(userData.tags ?? []);
+    fillPresetsCollection(presetsData ?? []);
 
-    // userDataTags.forEach((tag) => {
-    //   tag.display = tag.name.replaceAll("_", " ");
-    //   tag.personalBests ??= {
-    //     time: {},
-    //     words: {},
-    //     quote: {},
-    //     zen: {},
-    //     custom: {},
-    //   };
-
-    //   for (const mode of ["time", "words", "quote", "zen", "custom"]) {
-    //     tag.personalBests[mode as keyof PersonalBests] ??= {};
-    //   }
-    // });
-
-    // snap.tags = userDataTags;
-
-    snap.tags =
-      userData.tags?.map((tag) => ({
-        ...tag,
-        display: tag.name.replace(/_/g, " "),
-      })) ?? [];
-
-    snap.tags = snap.tags?.sort((a, b) => {
-      if (a.name > b.name) {
-        return 1;
-      } else if (a.name < b.name) {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
-
-    if (presetsData !== undefined && presetsData !== null) {
-      const presetsWithDisplay = presetsData.map((preset) => {
-        return {
-          ...preset,
-          display: preset.name.replace(/_/g, " "),
-        };
-      }) as SnapshotPreset[];
-      snap.presets = presetsWithDisplay;
-
-      snap.presets = snap.presets?.sort(
-        (a: SnapshotPreset, b: SnapshotPreset) => {
-          if (a.name > b.name) {
-            return 1;
-          } else if (a.name < b.name) {
-            return -1;
-          } else {
-            return 0;
-          }
-        },
-      );
-    }
+    fillResultFilterPresetsCollection(userData.resultFilterPresets ?? []);
+    updateTagsInFilterStorage(userData.tags?.map((it) => it._id) ?? []);
 
     snap.connections = convertConnections(connectionsData);
 
@@ -264,66 +214,6 @@ export async function initSnapshot(): Promise<Snapshot | false> {
   } finally {
     setSolidSnapshot(dbSnapshot);
   }
-}
-
-export async function getUserResults(offset?: number): Promise<boolean> {
-  if (!isAuthenticated()) return false;
-
-  if (!dbSnapshot) return false;
-  if (
-    dbSnapshot.results !== undefined &&
-    (offset === undefined || dbSnapshot.results.length > offset)
-  ) {
-    return false;
-  }
-
-  const response = await Ape.results.get({ query: { offset } });
-
-  if (response.status !== 200) {
-    showErrorNotification("Error getting results", { response });
-    return false;
-  }
-
-  //another check in case user logs out while waiting for response
-  if (!isAuthenticated()) return false;
-
-  const results: SnapshotResult<Mode>[] = response.body.data.map((result) => {
-    result.bailedOut ??= false;
-    result.blindMode ??= false;
-    result.lazyMode ??= false;
-    result.difficulty ??= "normal";
-    result.funbox ??= [];
-    result.language ??= "english";
-    result.numbers ??= false;
-    result.punctuation ??= false;
-    result.numbers ??= false;
-    result.quoteLength ??= -1;
-    result.restartCount ??= 0;
-    result.incompleteTestSeconds ??= 0;
-    result.afkDuration ??= 0;
-    result.tags ??= [];
-    return result as SnapshotResult<Mode>;
-  });
-  results?.sort((a, b) => b.timestamp - a.timestamp);
-
-  if (dbSnapshot.results !== undefined && dbSnapshot.results.length > 0) {
-    //merge
-    const oldestTimestamp = lastElementFromArray(dbSnapshot.results)
-      ?.timestamp as number;
-    const resultsWithoutDuplicates = results.filter(
-      (it) => it.timestamp < oldestTimestamp,
-    );
-    dbSnapshot.results.push(...resultsWithoutDuplicates);
-  } else {
-    dbSnapshot.results = results;
-  }
-
-  setLastResult(results[0]);
-  return true;
-}
-
-function _getCustomThemeById(themeID: string): CustomTheme | undefined {
-  return dbSnapshot?.customThemes?.find((t) => t._id === themeID);
 }
 
 export async function addCustomTheme(
@@ -412,187 +302,6 @@ export async function deleteCustomTheme(themeId: string): Promise<boolean> {
   );
 
   return true;
-}
-
-export async function getUserAverage10<M extends Mode>(
-  mode: M,
-  mode2: Mode2<M>,
-  punctuation: boolean,
-  numbers: boolean,
-  language: string,
-  difficulty: Difficulty,
-  lazyMode: boolean,
-): Promise<[number, number]> {
-  const snapshot = getSnapshot();
-
-  if (!snapshot) return [0, 0];
-
-  function cont(): [number, number] {
-    const activeTagIds: string[] = [];
-    snapshot?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        activeTagIds.push(tag._id);
-      }
-    });
-
-    let wpmSum = 0;
-    let accSum = 0;
-    let last10Wpm = 0;
-    let last10Acc = 0;
-    let count = 0;
-    let last10Count = 0;
-
-    if (snapshot?.results !== undefined) {
-      for (const result of snapshot.results) {
-        if (
-          result.mode === mode &&
-          (result.punctuation ?? false) === punctuation &&
-          (result.numbers ?? false) === numbers &&
-          result.language === language &&
-          result.difficulty === difficulty &&
-          (result.lazyMode === lazyMode ||
-            (result.lazyMode === undefined && !lazyMode)) &&
-          (activeTagIds.length === 0 ||
-            activeTagIds.some((tagId) => result.tags?.includes(tagId)))
-        ) {
-          // Continue if the mode2 doesn't match and it's not a quote
-          if (
-            `${result.mode2}` !== `${mode2 as string | number}` &&
-            mode !== "quote"
-          ) {
-            //using template strings because legacy results might use numbers in mode2
-            continue;
-          }
-
-          // Grab the most recent results from the current mode
-          if (last10Count < 10) {
-            last10Wpm += result.wpm;
-            last10Acc += result.acc;
-            last10Count++;
-          }
-
-          // Check if the mode2 matches and if it does, add it to the sum, for quotes, this is the quote id
-          if (`${result.mode2}` === `${mode2 as string | number}`) {
-            //using template strings because legacy results might use numbers in mode2
-            wpmSum += result.wpm;
-            accSum += result.acc;
-            count++;
-
-            if (count >= 10) break;
-          }
-        }
-      }
-    }
-
-    // Return the last 10 average wpm & acc for quote
-    // if the current quote id has never been completed before by the user
-    if (count === 0 && mode === "quote") {
-      return [last10Wpm / last10Count, last10Acc / last10Count];
-    }
-
-    return [wpmSum / count, accSum / count];
-  }
-
-  const retval: [number, number] =
-    snapshot === null || (await getUserResults()) === null ? [0, 0] : cont();
-
-  return retval;
-}
-
-export async function getUserDailyBest<M extends Mode>(
-  mode: M,
-  mode2: Mode2<M>,
-  punctuation: boolean,
-  numbers: boolean,
-  language: string,
-  difficulty: Difficulty,
-  lazyMode: boolean,
-): Promise<number> {
-  const snapshot = getSnapshot();
-
-  if (!snapshot) return 0;
-
-  function cont(): number {
-    const activeTagIds: string[] = [];
-    snapshot?.tags?.forEach((tag) => {
-      if (tag.active === true) {
-        activeTagIds.push(tag._id);
-      }
-    });
-
-    let bestWpm = 0;
-
-    if (snapshot?.results !== undefined) {
-      for (const result of snapshot.results) {
-        if (
-          result.mode === mode &&
-          (result.punctuation ?? false) === punctuation &&
-          (result.numbers ?? false) === numbers &&
-          result.language === language &&
-          result.difficulty === difficulty &&
-          (result.lazyMode === lazyMode ||
-            (result.lazyMode === undefined && !lazyMode)) &&
-          (activeTagIds.length === 0 ||
-            activeTagIds.some((tagId) => result.tags?.includes(tagId)))
-        ) {
-          if (result.timestamp < Date.now() - 86400000) {
-            continue;
-          }
-
-          // Continue if the mode2 doesn't match and it's not a quote
-          if (
-            `${result.mode2}` !== `${mode2 as string | number}` &&
-            mode !== "quote"
-          ) {
-            //using template strings because legacy results might use numbers in mode2
-            continue;
-          }
-
-          if (result.wpm > bestWpm) {
-            bestWpm = result.wpm;
-          }
-        }
-      }
-    }
-
-    return bestWpm;
-  }
-
-  const retval: number =
-    snapshot === null || (await getUserResults()) === null ? 0 : cont();
-
-  return retval;
-}
-
-export async function getActiveTagsPB<M extends Mode>(
-  mode: M,
-  mode2: Mode2<M>,
-  punctuation: boolean,
-  numbers: boolean,
-  language: string,
-  difficulty: Difficulty,
-  lazyMode: boolean,
-): Promise<number> {
-  const snapshot = getSnapshot();
-  if (!snapshot) return 0;
-
-  let tagPbWpm = 0;
-  for (const tag of snapshot.tags) {
-    if (!tag.active) continue;
-    const currTagPB = await getLocalTagPB(
-      tag._id,
-      mode,
-      mode2,
-      punctuation,
-      numbers,
-      language,
-      difficulty,
-      lazyMode,
-    );
-    if (currTagPB > tagPbWpm) tagPbWpm = currTagPB;
-  }
-
-  return tagPbWpm;
 }
 
 export async function getLocalPB<M extends Mode>(
@@ -975,9 +684,7 @@ export function saveLocalResult(data: SaveLocalResultData): void {
   if (!snapshot) return;
 
   if (data.result !== undefined) {
-    if (snapshot?.results !== undefined) {
-      snapshot.results.unshift(data.result);
-    }
+    void insertLocalResult({ result: data.result });
     setLastResult(data.result);
     if (snapshot.testActivity !== undefined) {
       snapshot.testActivity.increment(new Date(data.result.timestamp));
@@ -1186,36 +893,3 @@ export function isFriend(uid: string | undefined): boolean {
     ([receiverUid, status]) => receiverUid === uid && status === "accepted",
   );
 }
-
-// export async function DB.getLocalTagPB(tagId) {
-//   function cont() {
-//     let ret = 0;
-//     try {
-//       ret = dbSnapshot.tags.filter((t) => t.id === tagId)[0].pb;
-//       if (ret === undefined) {
-//         ret = 0;
-//       }
-//       return ret;
-//     } catch (e) {
-//       return ret;
-//     }
-//   }
-
-//   const retval = dbSnapshot !== null ? cont() : undefined;
-
-//   return retval;
-// }
-
-// export async functio(tagId, wpm) {
-//   function cont() {
-//     dbSnapshot.tags.forEach((tag) => {
-//       if (tag._id === tagId) {
-//         tag.pb = wpm;
-//       }
-//     });
-//   }
-
-//   if (dbSnapshot !== null) {
-//     cont();
-//   }
-// }
