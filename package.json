@@ -119,7 +119,8 @@
       "fast-xml-parser": "5.7.0",
       "uuid": "14.0.0",
       "@tootallnate/once": "3.0.1",
-      "fast-xml-builder": "1.1.7"
+      "fast-xml-builder": "1.1.7",
+      "ip-address": "10.1.1"
     }
   }
 }
