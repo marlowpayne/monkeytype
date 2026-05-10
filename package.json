@@ -31,7 +31,7 @@
     "dev-be": "turbo run dev --force --filter @monkeytype/backend",
     "dev-fe": "turbo run dev --force --filter @monkeytype/frontend",
     "dev-pkg": "turbo run dev --force --filter=\"./packages/*\"",
-    "reset": "rm -rf ./node_modules && rm -rf ./backend/node_modules && rm -rf ./frontend/node_modules && pnpm i",
+    "reset": "find . -name 'node_modules' -type d -prune -exec rm -r {} + && pnpm i",
     "storybook": "turbo run storybook --force",
     "start": "turbo run start",
     "start-be": "turbo run start --filter @monkeytype/backend",
@@ -118,7 +118,9 @@
       "picomatch": "4.0.4",
       "fast-xml-parser": "5.7.0",
       "uuid": "14.0.0",
-      "@tootallnate/once": "3.0.1"
+      "@tootallnate/once": "3.0.1",
+      "fast-xml-builder": "1.1.7",
+      "ip-address": "10.1.1"
     }
   }
 }
